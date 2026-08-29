@@ -1,41 +1,36 @@
-# Compiled Lua sources
-luac.out
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
 
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
+# Logs / temp
+*.log
+*.tmp
+*.bak
+*.dmp
+*.mdmp
+*~
 
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
+# Dota Workshop Tools local metadata/cache
+tools_asset_info.bin
+tools_thumbnail_cache.sqlite3*
 
-# Precompiled Headers
-*.gch
-*.pch
+# Source 2 compiled/generated assets
+*.vpk
+*.vmap_c
+*.vmdl_c
+*.vmat_c
+*.vtex_c
+*.vpcf_c
+*.vsnd_c
+*.vwrld
+*.vrman
+*.vwnod
+*.vents
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
+# Generated map data
+*.los
