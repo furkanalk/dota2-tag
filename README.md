@@ -116,6 +116,18 @@ Development is currently focused on local multiplayer testing, bot-based iterati
 </p>
 -->
 
+## Changelog
+
+<p>
+  <img src="https://img.shields.io/badge/Versioning-SemVer-3f4551?style=flat-square" alt="Semantic Versioning">
+  <img src="https://img.shields.io/badge/Releases-Release%20Please-4285F4?style=flat-square" alt="Release Please">
+  <img src="https://img.shields.io/badge/Status-Pre--1.0-orange?style=flat-square" alt="Pre 1.0">
+</p>
+
+Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
+
+Versioning follows [Semantic Versioning](https://semver.org/) and releases are managed automatically with Release Please.
+
 ## Contributing
 
 <p>
