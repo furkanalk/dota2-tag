@@ -1,0 +1,25 @@
+{
+  "name": "tag-party-tooling",
+  "version": "0.0.0",
+  "description": "Development tooling for Tag Party",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "commitlint": "commitlint --verbose",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github-personal:furkanalk/dota2-tag.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.3",
+    "@commitlint/config-conventional": "^20.5.3",
+    "husky": "^9.1.7"
+  },
+  "private": true
+}
