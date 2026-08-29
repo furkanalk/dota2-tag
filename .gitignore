@@ -34,3 +34,6 @@ tools_thumbnail_cache.sqlite3*
 
 # Generated map data
 *.los
+
+# Node.js
+node_modules/
