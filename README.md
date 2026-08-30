@@ -139,6 +139,9 @@ Versioning follows [Semantic Versioning](https://semver.org/) and releases are m
 
 Contributions are welcome.
 
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
+Code contributions are subject to the [Contributor License Agreement](CLA.md).
+
 Tag Party is intended to remain an open project where developers, map makers, designers, and players can help shape the game as it grows.
 
 You can contribute by:
@@ -181,7 +184,13 @@ Every kind of support helps keep the chase going.
   <img src="https://img.shields.io/badge/Source-Open-success?style=flat-square" alt="Open Source">
 </p>
 
-This project is licensed under the [GNU General Public License v3.0](LICENSE).
+Unless otherwise noted, the software source code in this repository is licensed
+under the [GNU General Public License v3.0](LICENSE).
+
+Tag Party branding, separately identified original media, production services,
+and third-party assets are not automatically covered by that software license.
+See [LICENSING.md](LICENSING.md) for the project licensing boundaries and
+[CLA.md](CLA.md) for contribution terms.
 
 Dota 2, Source 2, and related Valve assets are property of Valve Corporation and are not covered by this license.
 

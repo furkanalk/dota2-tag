@@ -1,0 +1,46 @@
+name: CLA
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  cla:
+    name: Verify contributor agreement
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verify CLA acceptance
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if [ "$PR_AUTHOR" = "$REPOSITORY_OWNER" ]; then
+            echo "Repository owner contribution; CLA check satisfied."
+            exit 0
+          fi
+
+          case "$PR_AUTHOR" in
+            *"[bot]")
+              echo "Automated bot contribution; CLA check satisfied."
+              exit 0
+              ;;
+          esac
+
+          if printf '%s\n' "$PR_BODY" | grep -Fqi -- \
+            '- [x] I agree to the [Tag Party Contributor License Agreement](https://github.com/furkanalk/dota2-tag/blob/main/CLA.md).'
+          then
+            echo "Contributor License Agreement accepted."
+            exit 0
+          fi
+
+          echo "::error::Please read CLA.md and check the CLA agreement box in the pull request description."
+          exit 1
