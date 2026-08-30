@@ -1,5 +1,6 @@
 local Config = require("tag/config/config")
 local PlayerRegistry = require("tag/players/player_registry")
+local AbilityLoadout = require("tag/players/ability_loadout")
 local TagCollision = require("tag/gameplay/tag/tag_collision")
 local ItState = require("tag/gameplay/tag/it_state")
 
@@ -13,11 +14,16 @@ function TagManager:Init()
   self.players = PlayerRegistry()
   self.players:Init()
 
+  self.abilityLoadout = AbilityLoadout()
+  self.abilityLoadout:Init(self.players)
+
   self.itState = ItState()
   self.itState:Init(self.players)
 
   self.itPlayerID = nil
-  self.lastTagTime = -999
+
+  self.tagBackProtectedPlayerID = nil
+  self.tagBackProtectionUntil = -999
 end
 
 function TagManager:RegisterHero(hero)
@@ -27,6 +33,8 @@ function TagManager:RegisterHero(hero)
     return
   end
 
+  self.abilityLoadout:Install(playerID)
+
   print(
     "HERO SPAWNED: "
     .. hero:GetUnitName()
@@ -34,20 +42,20 @@ function TagManager:RegisterHero(hero)
     .. playerID
   )
 
-  -- If the current IT hero respawned,
-  -- re-apply its IT state.
   if playerID == self.itPlayerID then
     self.itState:Apply(playerID)
+
+    self.abilityLoadout:SetPassEnabled(
+      playerID,
+      true
+    )
   end
 end
 
 function TagManager:Update()
   if self.itPlayerID == nil then
     self:SelectRandomIt()
-    return
   end
-
-  self:CheckForTag()
 end
 
 function TagManager:SelectRandomIt()
@@ -64,34 +72,61 @@ function TagManager:SelectRandomIt()
   self:SetIt(playerID)
 end
 
-function TagManager:CheckForTag()
+function TagManager:TryPass(sourcePlayerID)
+  if sourcePlayerID ~= self.itPlayerID then
+    return false
+  end
+
   local currentTime =
       GameRules:GetGameTime()
 
-  if currentTime - self.lastTagTime
-      < Config.TAG_COOLDOWN then
-    return
+  local excludedPlayerID = nil
+
+  if currentTime
+      < self.tagBackProtectionUntil
+  then
+    excludedPlayerID =
+        self.tagBackProtectedPlayerID
   end
 
   local targetPlayerID =
-      TagCollision.FindTarget(
+      TagCollision.FindTargetInCone(
         self.players:GetHeroes(),
-        self.itPlayerID,
-        Config.TAG_DISTANCE
+        sourcePlayerID,
+        Config.PASS_RANGE,
+        Config.PASS_CONE_HALF_ANGLE,
+        excludedPlayerID
       )
 
   if targetPlayerID == nil then
-    return
+    print(
+      "PASS MISSED: Player "
+      .. sourcePlayerID
+    )
+
+    return false
   end
 
+  local previousItPlayerID =
+      self.itPlayerID
+
   print(
-    "TAG! Player "
-    .. self.itPlayerID
+    "CURSE PASSED: Player "
+    .. sourcePlayerID
     .. " -> Player "
     .. targetPlayerID
   )
 
   self:SetIt(targetPlayerID)
+
+  self.tagBackProtectedPlayerID =
+      previousItPlayerID
+
+  self.tagBackProtectionUntil =
+      currentTime
+      + Config.TAG_BACK_IMMUNITY
+
+  return true
 end
 
 function TagManager:SetIt(playerID)
@@ -99,15 +134,23 @@ function TagManager:SetIt(playerID)
     return
   end
 
-  -- Remove IT state from previous player.
   if self.itPlayerID ~= nil then
     self.itState:Remove(self.itPlayerID)
+
+    self.abilityLoadout:SetPassEnabled(
+      self.itPlayerID,
+      false
+    )
   end
 
   self.itPlayerID = playerID
-  self.lastTagTime = GameRules:GetGameTime()
 
   self.itState:Apply(playerID)
+
+  self.abilityLoadout:SetPassEnabled(
+    playerID,
+    true
+  )
 
   local hero =
       self.players:GetHero(playerID)

@@ -4,8 +4,13 @@ local Config = {
 
   THINK_INTERVAL = 0.05,
 
-  TAG_DISTANCE = 150,
-  TAG_COOLDOWN = 1.0,
+  PASS_ABILITY_NAME = "tag_pass_the_curse",
+  PASS_ABILITY_SLOT = 5,
+
+  PASS_RANGE = 260,
+  PASS_CONE_HALF_ANGLE = 30,
+
+  TAG_BACK_IMMUNITY = 1.5,
 
   IT_SPEED_BONUS = 50,
 

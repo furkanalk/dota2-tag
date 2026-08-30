@@ -6,6 +6,7 @@
 *.json text eol=lf
 *.cjs  text eol=lf
 *.md   text eol=lf
+*.txt  text eol=lf
 
 # Binary/source asset formats must never receive text conversion.
 *.png  binary

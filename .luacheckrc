@@ -6,7 +6,8 @@ globals = {
   "Precache",
   "Activate",
   "TagGameMode",
-  "TagManager"
+  "TagManager",
+  "tag_pass_the_curse"
 }
 
 read_globals = dofile("tools/luacheck/dota_globals.lua")
