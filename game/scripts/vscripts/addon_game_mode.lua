@@ -11,6 +11,7 @@ function Precache(context)
 end
 
 function Activate()
+	-- luacheck: ignore 122
 	GameRules.TagGameMode = TagGameMode()
 	GameRules.TagGameMode:Init()
 end

@@ -1,0 +1,83 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  lua-quality:
+    name: Lua quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Install Lua tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            lua5.1 \
+            luarocks \
+            liblua5.1-0-dev
+          sudo luarocks --lua-version=5.1 install luacheck 1.2.0
+
+      - name: Validate Lua syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          while IFS= read -r -d '' file; do
+            echo "Checking ${file}"
+            luac5.1 -p "${file}"
+          done < <(
+            find game/scripts/vscripts \
+              -type f \
+              -name '*.lua' \
+              -print0
+          )
+
+      - name: Run Luacheck
+        run: luacheck game/scripts/vscripts --no-color
+
+  dependency-audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
+  performance-advisory:
+    name: Dota performance advisory
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Run Dota-specific advisory checks
+        run: python3 scripts/check_dota_performance.py
