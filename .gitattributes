@@ -1,0 +1,17 @@
+# Keep source and repository configuration deterministic across platforms.
+*.lua  text eol=lf
+*.py   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.cjs  text eol=lf
+*.md   text eol=lf
+
+# Binary/source asset formats must never receive text conversion.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.tga  binary
+*.tif  binary
+*.psd  binary
+*.vpk  binary
