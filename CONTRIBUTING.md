@@ -36,9 +36,16 @@ docs/gameplay-rules
 
 Keep pull requests focused on one logical change where practical.
 
-## Commit messages
+## Pull request titles and commits
 
-Tag Party uses Conventional Commits.
+Tag Party uses Squash & Merge.
+
+Individual commits on a contributor branch do not need to follow Conventional
+Commits. This keeps contribution workflows lightweight and allows normal
+development commits such as `wip`, `fix tests`, or `try another approach`.
+
+Pull request titles **must** follow Conventional Commits because the pull request
+title becomes the final commit on `main`.
 
 Examples:
 
@@ -46,10 +53,11 @@ Examples:
 feat(tag): add curse transfer ability
 fix(tag): prevent immediate tag-back
 docs: clarify gameplay rules
-chore(tooling): update repository tooling
+ci: improve repository quality checks
 ```
 
-Commit headers must remain within the repository's configured commitlint limit.
+The final repository history therefore remains consistent even when development
+branches contain informal intermediate commits.
 
 ## Testing
 
