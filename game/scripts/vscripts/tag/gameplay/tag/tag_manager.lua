@@ -74,18 +74,18 @@ end
 
 function TagManager:TryPass(sourcePlayerID)
   if sourcePlayerID ~= self.itPlayerID then
-    return false
+    return nil, "rejected"
   end
 
   local currentTime =
       GameRules:GetGameTime()
 
-  local excludedPlayerID = nil
+  local protectedPlayerID = nil
 
   if currentTime
       < self.tagBackProtectionUntil
   then
-    excludedPlayerID =
+    protectedPlayerID =
         self.tagBackProtectedPlayerID
   end
 
@@ -95,8 +95,31 @@ function TagManager:TryPass(sourcePlayerID)
         sourcePlayerID,
         Config.PASS_RANGE,
         Config.PASS_CONE_HALF_ANGLE,
-        excludedPlayerID
+        protectedPlayerID
       )
+
+  if targetPlayerID == nil
+      and protectedPlayerID ~= nil
+  then
+    local blockedPlayerID =
+        TagCollision.FindTargetInCone(
+          self.players:GetHeroes(),
+          sourcePlayerID,
+          Config.PASS_RANGE,
+          Config.PASS_CONE_HALF_ANGLE,
+          nil
+        )
+
+    if blockedPlayerID == protectedPlayerID then
+      print(
+        "PASS BLOCKED: Player "
+        .. protectedPlayerID
+        .. " has tag-back immunity"
+      )
+
+      return nil, "immune"
+    end
+  end
 
   if targetPlayerID == nil then
     print(
@@ -104,7 +127,7 @@ function TagManager:TryPass(sourcePlayerID)
       .. sourcePlayerID
     )
 
-    return false
+    return nil, "miss"
   end
 
   local previousItPlayerID =
@@ -126,7 +149,7 @@ function TagManager:TryPass(sourcePlayerID)
       currentTime
       + Config.TAG_BACK_IMMUNITY
 
-  return true
+  return targetPlayerID, "hit"
 end
 
 function TagManager:SetIt(playerID)
