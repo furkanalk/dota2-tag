@@ -81,3 +81,40 @@ jobs:
 
       - name: Run Dota-specific advisory checks
         run: python3 scripts/check_dota_performance.py
+
+  workflow-lint:
+    name: Workflow lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install actionlint
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version="1.7.12"
+          archive="actionlint_${version}_linux_amd64.tar.gz"
+
+          curl \
+            --fail \
+            --location \
+            --silent \
+            --show-error \
+            "https://github.com/rhysd/actionlint/releases/download/v${version}/${archive}" \
+            --output "${archive}"
+
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  ${archive}" \
+            | sha256sum --check
+
+          tar -xzf "${archive}" actionlint
+          sudo install -m 0755 actionlint /usr/local/bin/actionlint
+
+          actionlint -version
+
+      - name: Lint GitHub Actions workflows
+        run: actionlint
