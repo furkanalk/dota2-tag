@@ -1,7 +1,6 @@
 local Config = require("tag/config/config")
 local PlayerRegistry = require("tag/players/player_registry")
 local AbilityLoadout = require("tag/players/ability_loadout")
-local TagCollision = require("tag/gameplay/tag/tag_collision")
 local ItState = require("tag/gameplay/tag/it_state")
 
 
@@ -45,7 +44,7 @@ function TagManager:RegisterHero(hero)
   if playerID == self.itPlayerID then
     self.itState:Apply(playerID)
 
-    self.abilityLoadout:SetPassEnabled(
+    self.abilityLoadout:SetCursedEnabled(
       playerID,
       true
     )
@@ -72,59 +71,72 @@ function TagManager:SelectRandomIt()
   self:SetIt(playerID)
 end
 
-function TagManager:TryPass(sourcePlayerID)
+function TagManager:TryPassTo(
+    sourcePlayerID,
+    targetPlayerID
+)
   if sourcePlayerID ~= self.itPlayerID then
+    return nil, "rejected"
+  end
+
+  if targetPlayerID == sourcePlayerID then
+    return nil, "rejected"
+  end
+
+  local sourceHero =
+      self.players:GetHero(
+        sourcePlayerID
+      )
+
+  local targetHero =
+      self.players:GetHero(
+        targetPlayerID
+      )
+
+  if not sourceHero
+      or sourceHero:IsNull()
+      or not sourceHero:IsAlive()
+      or not targetHero
+      or targetHero:IsNull()
+      or not targetHero:IsAlive()
+  then
     return nil, "rejected"
   end
 
   local currentTime =
       GameRules:GetGameTime()
 
-  local protectedPlayerID = nil
-
   if currentTime
       < self.tagBackProtectionUntil
+      and targetPlayerID
+      == self.tagBackProtectedPlayerID
   then
-    protectedPlayerID =
-        self.tagBackProtectedPlayerID
-  end
-
-  local targetPlayerID =
-      TagCollision.FindTargetInCone(
-        self.players:GetHeroes(),
-        sourcePlayerID,
-        Config.PASS_RANGE,
-        Config.PASS_CONE_HALF_ANGLE,
-        protectedPlayerID
-      )
-
-  if targetPlayerID == nil
-      and protectedPlayerID ~= nil
-  then
-    local blockedPlayerID =
-        TagCollision.FindTargetInCone(
-          self.players:GetHeroes(),
-          sourcePlayerID,
-          Config.PASS_RANGE,
-          Config.PASS_CONE_HALF_ANGLE,
-          nil
-        )
-
-    if blockedPlayerID == protectedPlayerID then
-      print(
-        "PASS BLOCKED: Player "
-        .. protectedPlayerID
-        .. " has tag-back immunity"
-      )
-
-      return nil, "immune"
-    end
-  end
-
-  if targetPlayerID == nil then
     print(
-      "PASS MISSED: Player "
-      .. sourcePlayerID
+      "PASS BLOCKED: Player "
+      .. targetPlayerID
+      .. " has tag-back immunity"
+    )
+
+    return nil, "immune"
+  end
+
+  local sourcePosition =
+      sourceHero:GetAbsOrigin()
+
+  local targetPosition =
+      targetHero:GetAbsOrigin()
+
+  local heightDelta =
+      math.abs(
+        targetPosition.z
+        - sourcePosition.z
+      )
+
+  if heightDelta
+      > Config.PASS.MAX_HEIGHT_DELTA
+  then
+    print(
+      "PASS BLOCKED: height difference"
     )
 
     return nil, "miss"
@@ -140,14 +152,16 @@ function TagManager:TryPass(sourcePlayerID)
     .. targetPlayerID
   )
 
-  self:SetIt(targetPlayerID)
+  self:SetIt(
+    targetPlayerID
+  )
 
   self.tagBackProtectedPlayerID =
       previousItPlayerID
 
   self.tagBackProtectionUntil =
       currentTime
-      + Config.TAG_BACK_IMMUNITY
+      + Config.PASS.TAG_BACK_IMMUNITY
 
   return targetPlayerID, "hit"
 end
@@ -160,7 +174,7 @@ function TagManager:SetIt(playerID)
   if self.itPlayerID ~= nil then
     self.itState:Remove(self.itPlayerID)
 
-    self.abilityLoadout:SetPassEnabled(
+    self.abilityLoadout:SetCursedEnabled(
       self.itPlayerID,
       false
     )
@@ -170,7 +184,7 @@ function TagManager:SetIt(playerID)
 
   self.itState:Apply(playerID)
 
-  self.abilityLoadout:SetPassEnabled(
+  self.abilityLoadout:SetCursedEnabled(
     playerID,
     true
   )

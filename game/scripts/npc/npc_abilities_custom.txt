@@ -1,18 +1,39 @@
 "DOTAAbilities"
 {
-	"Version"	"1"
+    "Version" "1"
 
-	"tag_pass_the_curse"
-	{
-		"BaseClass"			"ability_lua"
-		"ScriptFile"			"tag/gameplay/abilities/pass_the_curse"
+    "tag_curse_leap"
+    {
+        "BaseClass" "ability_lua"
+        "ScriptFile" "tag/gameplay/abilities/curse_leap"
 
-		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING"
-		"AbilityTextureName"		"riki_blink_strike"
-		"MaxLevel"			"1"
+        "AbilityBehavior"
+            "DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING"
 
-		"AbilityCastPoint"		"0.1"
-		"AbilityCooldown"		"1.5"
-		"AbilityManaCost"		"0"
-	}
+        "AbilityTextureName" "mirana_leap"
+
+        "MaxLevel" "1"
+        "AbilityCastPoint" "0.0"
+        "AbilityCooldown" "2.5"
+        "AbilityManaCost" "0"
+    }
+
+    "tag_pass_the_curse"
+    {
+        "BaseClass" "ability_lua"
+        "ScriptFile" "tag/gameplay/abilities/pass_the_curse"
+
+        "AbilityBehavior"
+            "DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING"
+
+        "AbilityTextureName"
+            "skeleton_king_hellfire_blast"
+
+        "MaxLevel" "1"
+
+        "AbilityCastRange" "650"
+        "AbilityCastPoint" "0.1"
+        "AbilityCooldown" "1.5"
+        "AbilityManaCost" "0"
+    }
 }

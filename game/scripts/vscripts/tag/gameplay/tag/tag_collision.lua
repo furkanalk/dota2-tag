@@ -29,10 +29,15 @@ local function GetConeDistance(
     origin,
     forward,
     maxDistance,
-    minDot
+    minDot,
+    maxHeightDelta
 )
   local offset =
       hero:GetAbsOrigin() - origin
+
+  if math.abs(offset.z) > maxHeightDelta then
+    return nil
+  end
 
   local distance = offset:Length2D()
 
@@ -60,6 +65,7 @@ function TagCollision.FindTargetInCone(
     itPlayerID,
     maxDistance,
     halfAngleDegrees,
+    maxHeightDelta,
     excludedPlayerID
 )
   local itHero = heroes[itPlayerID]
@@ -90,7 +96,8 @@ function TagCollision.FindTargetInCone(
             origin,
             forward,
             maxDistance,
-            minDot
+            minDot,
+            maxHeightDelta
           )
 
       if distance
