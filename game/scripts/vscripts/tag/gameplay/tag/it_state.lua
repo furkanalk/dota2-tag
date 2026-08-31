@@ -2,78 +2,146 @@ local Config = require("tag/config/config")
 
 local ItState = class({})
 
-function ItState:Init(playerRegistry)
-  self.players = playerRegistry
-  self.particle = nil
-end
 
-function ItState:Apply(playerID)
-  local hero = self.players:GetHero(playerID)
-
-  if not hero or hero:IsNull() then
+local function DestroyParticle(particle)
+  if particle == nil then
     return
   end
 
+  ParticleManager:DestroyParticle(
+    particle,
+    false
+  )
+
+  ParticleManager:ReleaseParticleIndex(
+    particle
+  )
+end
+
+
+function ItState:Init(playerRegistry)
+  self.players = playerRegistry
+
+  self.ringParticle = nil
+  self.curseParticle = nil
+end
+
+function ItState:Apply(playerID)
+  local hero =
+      self.players:GetHero(playerID)
+
+  if not hero
+      or hero:IsNull()
+  then
+    return
+  end
+
+  hero:AddNewModifier(
+    hero,
+    nil,
+    "modifier_stunned",
+    {
+      duration =
+          Config.IT.TRANSITION_DURATION
+    }
+  )
+
+  local transitionParticle =
+      ParticleManager:CreateParticle(
+        Config.IT.TRANSITION_PARTICLE,
+        PATTACH_ABSORIGIN_FOLLOW,
+        hero
+      )
+
+  ParticleManager:ReleaseParticleIndex(
+    transitionParticle
+  )
+
   local baseSpeed =
-      self.players:GetBaseMoveSpeed(playerID)
+      self.players:GetBaseMoveSpeed(
+        playerID
+      )
 
   hero:SetBaseMoveSpeed(
-    baseSpeed + Config.IT_SPEED_BONUS
+    baseSpeed
+    + Config.IT.SPEED_BONUS
   )
 
   hero:SetRenderColor(
-    Config.IT_COLOR.r,
-    Config.IT_COLOR.g,
-    Config.IT_COLOR.b
+    Config.IT.COLOR.r,
+    Config.IT.COLOR.g,
+    Config.IT.COLOR.b
   )
 
-  self:DestroyParticle()
+  self:DestroyParticles()
 
-  self.particle =
+  self.ringParticle =
       ParticleManager:CreateParticle(
-        Config.IT_RING_PARTICLE,
+        Config.IT.RING_PARTICLE,
         PATTACH_ABSORIGIN_FOLLOW,
         hero
       )
 
   ParticleManager:SetParticleControl(
-    self.particle,
+    self.ringParticle,
     1,
     Vector(255, 60, 60)
+  )
+
+  self.curseParticle =
+      ParticleManager:CreateParticle(
+        Config.IT.CURSE_PARTICLE,
+        PATTACH_OVERHEAD_FOLLOW,
+        hero
+      )
+
+  EmitSoundOn(
+    Config.IT.CURSE_AMBIENCE_SOUND,
+    hero
   )
 end
 
 function ItState:Remove(playerID)
-  local hero = self.players:GetHero(playerID)
+  local hero =
+      self.players:GetHero(playerID)
 
-  if not hero or hero:IsNull() then
+  if not hero
+      or hero:IsNull()
+  then
     return
   end
+
+  StopSoundOn(
+    Config.IT.CURSE_AMBIENCE_SOUND,
+    hero
+  )
 
   hero:SetBaseMoveSpeed(
-    self.players:GetBaseMoveSpeed(playerID)
+    self.players:GetBaseMoveSpeed(
+      playerID
+    )
   )
 
-  hero:SetRenderColor(255, 255, 255)
+  hero:SetRenderColor(
+    255,
+    255,
+    255
+  )
 
-  self:DestroyParticle()
+  self:DestroyParticles()
 end
 
-function ItState:DestroyParticle()
-  if self.particle == nil then
-    return
-  end
-
-  ParticleManager:DestroyParticle(
-    self.particle,
-    false
+function ItState:DestroyParticles()
+  DestroyParticle(
+    self.ringParticle
   )
 
-  ParticleManager:ReleaseParticleIndex(
-    self.particle
+  DestroyParticle(
+    self.curseParticle
   )
 
-  self.particle = nil
+  self.ringParticle = nil
+  self.curseParticle = nil
 end
 
 return ItState

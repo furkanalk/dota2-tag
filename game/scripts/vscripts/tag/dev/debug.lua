@@ -4,7 +4,7 @@ local Debug = {}
 
 
 function Debug.Apply()
-  if not Config.DEBUG_MODE then
+  if not Config.GAME.DEBUG_MODE then
     return
   end
 

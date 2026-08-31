@@ -26,7 +26,7 @@ function TagGameMode:Init()
     "OnThink",
     self,
     "GlobalThink",
-    Config.THINK_INTERVAL
+    Config.GAME.THINK_INTERVAL
   )
 end
 
@@ -47,7 +47,7 @@ function TagGameMode:OnThink()
     return nil
   end
 
-  return Config.THINK_INTERVAL
+  return Config.GAME.THINK_INTERVAL
 end
 
 return TagGameMode
