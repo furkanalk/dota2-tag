@@ -1,6 +1,6 @@
 local Config = require("tag/config/config")
 local PlayerRegistry = require("tag/players/player_registry")
-local TagCollision = require("tag/gameplay/tag/tag_collision")
+local AbilityLoadout = require("tag/players/ability_loadout")
 local ItState = require("tag/gameplay/tag/it_state")
 
 
@@ -13,11 +13,16 @@ function TagManager:Init()
   self.players = PlayerRegistry()
   self.players:Init()
 
+  self.abilityLoadout = AbilityLoadout()
+  self.abilityLoadout:Init(self.players)
+
   self.itState = ItState()
   self.itState:Init(self.players)
 
   self.itPlayerID = nil
-  self.lastTagTime = -999
+
+  self.tagBackProtectedPlayerID = nil
+  self.tagBackProtectionUntil = -999
 end
 
 function TagManager:RegisterHero(hero)
@@ -27,6 +32,8 @@ function TagManager:RegisterHero(hero)
     return
   end
 
+  self.abilityLoadout:Install(playerID)
+
   print(
     "HERO SPAWNED: "
     .. hero:GetUnitName()
@@ -34,20 +41,20 @@ function TagManager:RegisterHero(hero)
     .. playerID
   )
 
-  -- If the current IT hero respawned,
-  -- re-apply its IT state.
   if playerID == self.itPlayerID then
     self.itState:Apply(playerID)
+
+    self.abilityLoadout:SetCursedEnabled(
+      playerID,
+      true
+    )
   end
 end
 
 function TagManager:Update()
   if self.itPlayerID == nil then
     self:SelectRandomIt()
-    return
   end
-
-  self:CheckForTag()
 end
 
 function TagManager:SelectRandomIt()
@@ -64,34 +71,99 @@ function TagManager:SelectRandomIt()
   self:SetIt(playerID)
 end
 
-function TagManager:CheckForTag()
+function TagManager:TryPassTo(
+    sourcePlayerID,
+    targetPlayerID
+)
+  if sourcePlayerID ~= self.itPlayerID then
+    return nil, "rejected"
+  end
+
+  if targetPlayerID == sourcePlayerID then
+    return nil, "rejected"
+  end
+
+  local sourceHero =
+      self.players:GetHero(
+        sourcePlayerID
+      )
+
+  local targetHero =
+      self.players:GetHero(
+        targetPlayerID
+      )
+
+  if not sourceHero
+      or sourceHero:IsNull()
+      or not sourceHero:IsAlive()
+      or not targetHero
+      or targetHero:IsNull()
+      or not targetHero:IsAlive()
+  then
+    return nil, "rejected"
+  end
+
   local currentTime =
       GameRules:GetGameTime()
 
-  if currentTime - self.lastTagTime
-      < Config.TAG_COOLDOWN then
-    return
+  if currentTime
+      < self.tagBackProtectionUntil
+      and targetPlayerID
+      == self.tagBackProtectedPlayerID
+  then
+    print(
+      "PASS BLOCKED: Player "
+      .. targetPlayerID
+      .. " has tag-back immunity"
+    )
+
+    return nil, "immune"
   end
 
-  local targetPlayerID =
-      TagCollision.FindTarget(
-        self.players:GetHeroes(),
-        self.itPlayerID,
-        Config.TAG_DISTANCE
+  local sourcePosition =
+      sourceHero:GetAbsOrigin()
+
+  local targetPosition =
+      targetHero:GetAbsOrigin()
+
+  local heightDelta =
+      math.abs(
+        targetPosition.z
+        - sourcePosition.z
       )
 
-  if targetPlayerID == nil then
-    return
+  if heightDelta
+      > Config.PASS.MAX_HEIGHT_DELTA
+  then
+    print(
+      "PASS BLOCKED: height difference"
+    )
+
+    return nil, "miss"
   end
 
+  local previousItPlayerID =
+      self.itPlayerID
+
   print(
-    "TAG! Player "
-    .. self.itPlayerID
+    "CURSE PASSED: Player "
+    .. sourcePlayerID
     .. " -> Player "
     .. targetPlayerID
   )
 
-  self:SetIt(targetPlayerID)
+  self:SetIt(
+    targetPlayerID
+  )
+
+  self.tagBackProtectedPlayerID =
+      previousItPlayerID
+
+  self.tagBackProtectionUntil =
+      currentTime
+      + Config.PASS.TAG_BACK_IMMUNITY
+
+  return targetPlayerID, "hit"
 end
 
 function TagManager:SetIt(playerID)
@@ -99,15 +171,23 @@ function TagManager:SetIt(playerID)
     return
   end
 
-  -- Remove IT state from previous player.
   if self.itPlayerID ~= nil then
     self.itState:Remove(self.itPlayerID)
+
+    self.abilityLoadout:SetCursedEnabled(
+      self.itPlayerID,
+      false
+    )
   end
 
   self.itPlayerID = playerID
-  self.lastTagTime = GameRules:GetGameTime()
 
   self.itState:Apply(playerID)
+
+  self.abilityLoadout:SetCursedEnabled(
+    playerID,
+    true
+  )
 
   local hero =
       self.players:GetHero(playerID)

@@ -1,11 +1,58 @@
 local TagGameMode = require("tag/core/game_mode")
 local Config = require("tag/config/config")
 
-
 function Precache(context)
 	PrecacheResource(
 		"particle",
-		Config.IT_RING_PARTICLE,
+		Config.IT.RING_PARTICLE,
+		context
+	)
+
+	PrecacheResource(
+		"particle",
+		Config.IT.CURSE_PARTICLE,
+		context
+	)
+
+	PrecacheResource(
+		"particle",
+		Config.PASS.HIT_PARTICLE,
+		context
+	)
+
+	PrecacheResource(
+		"soundfile",
+		Config.IT.SOUND_FILE,
+		context
+	)
+
+	PrecacheResource(
+		"particle",
+		Config.IT.TRANSITION_PARTICLE,
+		context
+	)
+
+	PrecacheResource(
+		"particle",
+		Config.PASS.PROJECTILE_PARTICLE,
+		context
+	)
+
+	PrecacheResource(
+		"particle",
+		Config.LEAP.PARTICLE,
+		context
+	)
+
+	PrecacheResource(
+		"soundfile",
+		Config.LEAP.SOUND_FILE,
+		context
+	)
+
+	PrecacheResource(
+		"soundfile",
+		Config.PASS.SOUND_FILE,
 		context
 	)
 end

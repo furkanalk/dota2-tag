@@ -1,49 +1,39 @@
-// Dota Heroes File
 "DOTAAbilities"
 {
-	"Version"		"1"
+    "Version" "1"
 
-	//=================================================================================================================
-	// Templar Assassin: Refraction Holdout
-	//=================================================================================================================
-	"templar_assassin_refraction_holdout"
-	{
-		// General
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
-		"AbilityUnitDamageType"			"DAMAGE_TYPE_PHYSICAL"	
+    "tag_curse_leap"
+    {
+        "BaseClass" "ability_lua"
+        "ScriptFile" "tag/gameplay/abilities/curse_leap"
 
-		// Casting
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCastPoint"				"0.0 0.0 0.0 0.0"
+        "AbilityBehavior"
+            "DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING"
 
-		// Time		
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCooldown"				"17.0 17.0 17.0 17.0"
+        "AbilityTextureName" "mirana_leap"
 
-		// Cost
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityManaCost"				"100"
-		
-		// Special
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"					"FIELD_INTEGER"
-				"damage_absorb"				"200 300 400 500"
-			}
-			"02"
-			{
-				"var_type"					"FIELD_INTEGER"
-				"bonus_damage"				"20 40 60 80"
-			}
-			"04"
-			{
-				"var_type"					"FIELD_FLOAT"
-				"duration"					"17.0 17.0 17.0 17.0"
-			}
-		}
-	}
+        "MaxLevel" "1"
+        "AbilityCastPoint" "0.0"
+        "AbilityCooldown" "2.5"
+        "AbilityManaCost" "0"
+    }
+
+    "tag_pass_the_curse"
+    {
+        "BaseClass" "ability_lua"
+        "ScriptFile" "tag/gameplay/abilities/pass_the_curse"
+
+        "AbilityBehavior"
+            "DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING"
+
+        "AbilityTextureName"
+            "skeleton_king_hellfire_blast"
+
+        "MaxLevel" "1"
+
+        "AbilityCastRange" "650"
+        "AbilityCastPoint" "0.1"
+        "AbilityCooldown" "1.5"
+        "AbilityManaCost" "0"
+    }
 }

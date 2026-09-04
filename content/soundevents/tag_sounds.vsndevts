@@ -1,0 +1,182 @@
+"TagParty.CurseImpact"
+{
+    "operator_stacks"
+    {
+        "update_stack"
+        {
+            "reference_operator"
+            {
+                "operator" "sos_reference_stack"
+                "reference_stack" "dota_src1_3d"
+
+                "operator_variables"
+                {
+                    "vsnd_files"
+                    {
+                        "value"
+                        {
+                            "value0" "sounds/weapons/hero/silencer/curse_impact.vsnd"
+                        }
+                    }
+
+                    "volume"
+                    {
+                        "value" "1.0"
+                    }
+
+                    "pitch"
+                    {
+                        "value" "1.0"
+                    }
+
+                    "soundlevel"
+                    {
+                        "value" "75.0"
+                    }
+
+                    "distance_max"
+                    {
+                        "value" "1800.0"
+                    }
+                }
+            }
+        }
+    }
+}
+
+"TagParty.CurseCast"
+{
+    "operator_stacks"
+    {
+        "update_stack"
+        {
+            "reference_operator"
+            {
+                "operator" "sos_reference_stack"
+                "reference_stack" "dota_src1_3d"
+
+                "operator_variables"
+                {
+                    "vsnd_files"
+                    {
+                        "value"
+                        {
+                            "value0" "sounds/weapons/hero/silencer/curse_cast.vsnd"
+                        }
+                    }
+
+                    "volume"
+                    {
+                        "value" "0.85"
+                    }
+
+                    "pitch"
+                    {
+                        "value" "1.0"
+                    }
+
+                    "soundlevel"
+                    {
+                        "value" "75.0"
+                    }
+
+                    "distance_max"
+                    {
+                        "value" "1800.0"
+                    }
+                }
+            }
+        }
+    }
+}
+
+"TagParty.CurseAmbience"
+{
+    "operator_stacks"
+    {
+        "update_stack"
+        {
+            "reference_operator"
+            {
+                "operator" "sos_reference_stack"
+                "reference_stack" "dota_src1_3d"
+
+                "operator_variables"
+                {
+                    "vsnd_files"
+                    {
+                        "value"
+                        {
+                            "value0" "sounds/weapons/hero/warlock/warlock_shadowword.vsnd"
+                        }
+                    }
+
+                    "volume"
+                    {
+                        "value" "0.30"
+                    }
+
+                    "pitch"
+                    {
+                        "value" "0.92"
+                    }
+
+                    "soundlevel"
+                    {
+                        "value" "65.0"
+                    }
+
+                    "distance_max"
+                    {
+                        "value" "1200.0"
+                    }
+                }
+            }
+        }
+    }
+}
+"TagParty.PassMiss"
+{
+    "operator_stacks"
+    {
+        "update_stack"
+        {
+            "reference_operator"
+            {
+                "operator" "sos_reference_stack"
+                "reference_stack" "dota_src1_3d"
+
+                "operator_variables"
+                {
+                    "vsnd_files"
+                    {
+                        "value"
+                        {
+                            "value0" "sounds/weapons/hero/skeleton_king/hellfire_blast.vsnd"
+                        }
+                    }
+
+                    "volume"
+                    {
+                        "value" "0.50"
+                    }
+
+                    "pitch"
+                    {
+                        "value" "1.0"
+                    }
+
+                    "soundlevel"
+                    {
+                        "value" "81.0"
+                    }
+
+                    "distance_max"
+                    {
+                        "value" "2000.0"
+                    }
+                }
+            }
+        }
+    }
+}
