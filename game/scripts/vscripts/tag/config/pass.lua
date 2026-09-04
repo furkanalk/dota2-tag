@@ -3,7 +3,7 @@ return {
   ABILITY_SLOT = 5,
 
   RANGE = 650,
-  PROJECTILE_SPEED = 900,
+  PROJECTILE_SPEED = 1500,
   PROJECTILE_RADIUS = 85,
   PROJECTILE_HEIGHT = 110,
   MAX_HEIGHT_DELTA = 64,
@@ -16,14 +16,20 @@ return {
   HIT_PARTICLE =
   "particles/units/heroes/hero_bane/bane_sap.vpcf",
 
-  CAST_SOUND =
+  SOUND_FILE =
+  "soundevents/game_sounds_heroes/game_sounds_skeletonking.vsndevts",
+
+  PROJECTILE_SOUND =
+  "Hero_SkeletonKing.Hellfire_Blast",
+
+  SUCCESS_VOICE_SOUND =
   "TagParty.CurseCast",
 
-  HIT_SOUND =
+  SUCCESS_HIT_SOUND =
   "TagParty.CurseImpact",
 
   MISS_SOUND =
-  "General.CastFail_InvalidTarget_Hero",
+  "TagParty.PassMiss",
 
   IMMUNE_SOUND =
   "General.CastFail_InvalidTarget_Hero"

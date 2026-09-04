@@ -51,12 +51,12 @@ function PassFeedback.PlayHit(
   )
 
   EmitSoundOn(
-    Config.PASS.CAST_SOUND,
+    Config.PASS.SUCCESS_VOICE_SOUND,
     caster
   )
 
   EmitSoundOn(
-    Config.PASS.HIT_SOUND,
+    Config.PASS.SUCCESS_HIT_SOUND,
     target
   )
 end
@@ -65,6 +65,19 @@ function PassFeedback.PlayFailure(
     caster,
     result
 )
+  if result == "miss" then
+    EmitSoundOn(
+      Config.PASS.MISS_SOUND,
+      caster
+    )
+
+    return
+  end
+
+  if result ~= "immune" then
+    return
+  end
+
   local player =
       caster:GetPlayerOwner()
 
@@ -72,22 +85,8 @@ function PassFeedback.PlayFailure(
     return
   end
 
-  local soundName = nil
-
-  if result == "miss" then
-    soundName =
-        Config.PASS.MISS_SOUND
-  elseif result == "immune" then
-    soundName =
-        Config.PASS.IMMUNE_SOUND
-  end
-
-  if soundName == nil then
-    return
-  end
-
   EmitSoundOnClient(
-    soundName,
+    Config.PASS.IMMUNE_SOUND,
     player
   )
 end

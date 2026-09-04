@@ -135,3 +135,48 @@
         }
     }
 }
+"TagParty.PassMiss"
+{
+    "operator_stacks"
+    {
+        "update_stack"
+        {
+            "reference_operator"
+            {
+                "operator" "sos_reference_stack"
+                "reference_stack" "dota_src1_3d"
+
+                "operator_variables"
+                {
+                    "vsnd_files"
+                    {
+                        "value"
+                        {
+                            "value0" "sounds/weapons/hero/skeleton_king/hellfire_blast.vsnd"
+                        }
+                    }
+
+                    "volume"
+                    {
+                        "value" "0.50"
+                    }
+
+                    "pitch"
+                    {
+                        "value" "1.0"
+                    }
+
+                    "soundlevel"
+                    {
+                        "value" "81.0"
+                    }
+
+                    "distance_max"
+                    {
+                        "value" "2000.0"
+                    }
+                }
+            }
+        }
+    }
+}
