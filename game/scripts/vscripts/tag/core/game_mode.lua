@@ -1,7 +1,7 @@
 local Config = require("tag/config/config")
 local Debug = require("tag/dev/debug")
 local TagManager = require("tag/gameplay/tag/tag_manager")
-
+local StabilityManager = require("tag/gameplay/stability/stability_manager")
 
 if TagGameMode == nil then
   TagGameMode = class({})
@@ -15,6 +15,9 @@ function TagGameMode:Init()
 
   self.tagManager = TagManager()
   self.tagManager:Init()
+
+  self.stabilityManager = StabilityManager()
+  self.stabilityManager:Init()
 
   ListenToGameEvent(
     "npc_spawned",
@@ -35,6 +38,7 @@ function TagGameMode:OnNPCSpawned(event)
 
   if unit and unit:IsRealHero() then
     self.tagManager:RegisterHero(unit)
+    self.stabilityManager:RegisterHero(unit)
   end
 end
 
