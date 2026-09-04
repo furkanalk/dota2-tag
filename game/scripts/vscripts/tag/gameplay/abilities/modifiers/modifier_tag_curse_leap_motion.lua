@@ -34,6 +34,8 @@ function modifier_tag_curse_leap_motion:OnCreated(params)
   end
 
   local parent = self:GetParent()
+  self.startPosition =
+      parent:GetAbsOrigin()
   local forward = parent:GetForwardVector()
 
   local length =
@@ -54,12 +56,44 @@ function modifier_tag_curse_leap_motion:OnCreated(params)
         0
       )
 
+  local effectEndPosition =
+      self.startPosition
+      + self.direction * self.distance
+
+  local particle =
+      ParticleManager:CreateParticle(
+        Config.LEAP.PARTICLE,
+        PATTACH_WORLDORIGIN,
+        parent
+      )
+
+  ParticleManager:SetParticleControl(
+    particle,
+    0,
+    self.startPosition
+  )
+
+  ParticleManager:SetParticleControl(
+    particle,
+    1,
+    effectEndPosition
+  )
+
+  ParticleManager:ReleaseParticleIndex(
+    particle
+  )
+
   self.speed =
       self.distance / self.duration
 
   if not self:ApplyHorizontalMotionController() then
     self:Destroy()
+    return
   end
+
+  parent:EmitSound(
+    Config.LEAP.SOUND_START
+  )
 end
 
 function modifier_tag_curse_leap_motion:UpdateHorizontalMotion(
@@ -165,5 +199,9 @@ function modifier_tag_curse_leap_motion:OnDestroy()
     parent,
     parent:GetAbsOrigin(),
     true
+  )
+
+  parent:EmitSound(
+    Config.LEAP.SOUND_END
   )
 end

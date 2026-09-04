@@ -37,6 +37,24 @@ function Precache(context)
 		Config.PASS.PROJECTILE_PARTICLE,
 		context
 	)
+
+	PrecacheResource(
+		"particle",
+		Config.LEAP.PARTICLE,
+		context
+	)
+
+	PrecacheResource(
+		"soundfile",
+		Config.LEAP.SOUND_FILE,
+		context
+	)
+
+	PrecacheResource(
+		"soundfile",
+		Config.PASS.SOUND_FILE,
+		context
+	)
 end
 
 function Activate()
