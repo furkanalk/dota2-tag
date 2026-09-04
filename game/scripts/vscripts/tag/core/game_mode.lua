@@ -61,6 +61,9 @@ function TagGameMode:OnThink()
 
   if state == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
     self.tagManager:Update()
+    self.stabilityManager:Update(
+      GameRules:GetGameTime()
+    )
   elseif state >= DOTA_GAMERULES_STATE_POST_GAME then
     return nil
   end

@@ -10,6 +10,7 @@ function StabilityState:Init(maxStability)
   self.phase = StabilityState.NORMAL
 
   self.lastImpactTime = nil
+  self.nextRegenTime = nil
   self.phaseUntil = nil
 end
 
@@ -38,6 +39,14 @@ end
 
 function StabilityState:GetLastImpactTime()
   return self.lastImpactTime
+end
+
+function StabilityState:SetNextRegenTime(time)
+  self.nextRegenTime = time
+end
+
+function StabilityState:GetNextRegenTime()
+  return self.nextRegenTime
 end
 
 function StabilityState:GetPhaseUntil()
