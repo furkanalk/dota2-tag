@@ -32,6 +32,18 @@ function StabilityState:SetCurrent(value)
   )
 end
 
+function StabilityState:SetLastImpactTime(time)
+  self.lastImpactTime = time
+end
+
+function StabilityState:GetLastImpactTime()
+  return self.lastImpactTime
+end
+
+function StabilityState:GetPhaseUntil()
+  return self.phaseUntil
+end
+
 function StabilityState:SetPhase(phase, phaseUntil)
   self.phase = phase
   self.phaseUntil = phaseUntil

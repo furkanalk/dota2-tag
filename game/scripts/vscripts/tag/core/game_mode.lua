@@ -1,5 +1,6 @@
 local Config = require("tag/config/config")
 local Debug = require("tag/dev/debug")
+local ImpactManager = require("tag/gameplay/impact/impact_manager")
 local TagManager = require("tag/gameplay/tag/tag_manager")
 local StabilityManager = require("tag/gameplay/stability/stability_manager")
 
@@ -18,6 +19,19 @@ function TagGameMode:Init()
 
   self.stabilityManager = StabilityManager()
   self.stabilityManager:Init()
+
+  self.impactManager = ImpactManager()
+  self.impactManager:Init(
+    self.stabilityManager
+  )
+
+  GameRules:GetGameModeEntity():SetDamageFilter(
+    Dynamic_Wrap(
+      TagGameMode,
+      "DamageFilter"
+    ),
+    self
+  )
 
   ListenToGameEvent(
     "npc_spawned",
@@ -52,6 +66,65 @@ function TagGameMode:OnThink()
   end
 
   return Config.GAME.THINK_INTERVAL
+end
+
+function TagGameMode:DamageFilter(event)
+  local victimIndex =
+      event.entindex_victim_const
+
+  if victimIndex == nil
+      or victimIndex <= 0
+  then
+    return true
+  end
+
+  local victim =
+      EntIndexToHScript(victimIndex)
+
+  if not victim
+      or victim:IsNull()
+      or not victim:IsRealHero()
+  then
+    return true
+  end
+
+  -- Tag Party does not use conventional HP combat.
+  event.damage = 0
+
+  local attackerIndex =
+      event.entindex_attacker_const
+
+  if attackerIndex == nil
+      or attackerIndex <= 0
+  then
+    return true
+  end
+
+  local attacker =
+      EntIndexToHScript(attackerIndex)
+
+  if not attacker
+      or attacker:IsNull()
+      or not attacker:IsRealHero()
+  then
+    return true
+  end
+
+  local inflictorIndex =
+      event.entindex_inflictor_const
+
+  local isNormalAttack =
+      inflictorIndex == nil
+      or inflictorIndex <= 0
+
+  if isNormalAttack then
+    self.impactManager:TryNormalImpact(
+      attacker,
+      victim
+    )
+  end
+
+  return true
 end
 
 return TagGameMode

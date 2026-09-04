@@ -77,4 +77,57 @@ function StabilityManager:GetPhase(playerID)
   return state:GetPhase()
 end
 
+function StabilityManager:ApplyImpact(
+    sourcePlayerID,
+    targetPlayerID,
+    amount,
+    currentTime
+)
+  local state = self.states[targetPlayerID]
+
+  if state == nil then
+    return false, "unregistered"
+  end
+
+  if state:GetPhase() == StabilityState.UNSTABLE then
+    return false, "unstable"
+  end
+
+  local previous = state:GetCurrent()
+
+  state:SetLastImpactTime(currentTime)
+  state:SetCurrent(previous - amount)
+
+  local current = state:GetCurrent()
+
+  print(
+    "IMPACT: Player "
+    .. tostring(sourcePlayerID)
+    .. " -> Player "
+    .. targetPlayerID
+    .. " | "
+    .. current
+    .. "/"
+    .. state:GetMax()
+  )
+
+  if previous > 0 and current == 0 then
+    state:SetPhase(
+      StabilityState.UNSTABLE,
+      currentTime
+      + Config.STABILITY.UNSTABLE_DURATION
+    )
+
+    print(
+      "STABILITY BREAK: Player "
+      .. targetPlayerID
+      .. " -> UNSTABLE"
+    )
+
+    return true, "break"
+  end
+
+  return true, "hit"
+end
+
 return StabilityManager
