@@ -2,7 +2,6 @@ local PlayerRegistry = class({})
 
 function PlayerRegistry:Init()
   self.heroes = {}
-  self.baseMoveSpeeds = {}
 end
 
 function PlayerRegistry:Register(hero)
@@ -14,10 +13,6 @@ function PlayerRegistry:Register(hero)
 
   self.heroes[playerID] = hero
 
-  if self.baseMoveSpeeds[playerID] == nil then
-    self.baseMoveSpeeds[playerID] = hero:GetBaseMoveSpeed()
-  end
-
   return playerID
 end
 
@@ -27,10 +22,6 @@ end
 
 function PlayerRegistry:GetHeroes()
   return self.heroes
-end
-
-function PlayerRegistry:GetBaseMoveSpeed(playerID)
-  return self.baseMoveSpeeds[playerID]
 end
 
 function PlayerRegistry:GetAlivePlayerIDs()

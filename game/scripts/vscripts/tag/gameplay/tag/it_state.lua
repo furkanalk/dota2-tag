@@ -36,16 +36,6 @@ function ItState:Apply(playerID)
     return
   end
 
-  hero:AddNewModifier(
-    hero,
-    nil,
-    "modifier_stunned",
-    {
-      duration =
-          Config.IT.TRANSITION_DURATION
-    }
-  )
-
   local transitionParticle =
       ParticleManager:CreateParticle(
         Config.IT.TRANSITION_PARTICLE,
@@ -55,16 +45,6 @@ function ItState:Apply(playerID)
 
   ParticleManager:ReleaseParticleIndex(
     transitionParticle
-  )
-
-  local baseSpeed =
-      self.players:GetBaseMoveSpeed(
-        playerID
-      )
-
-  hero:SetBaseMoveSpeed(
-    baseSpeed
-    + Config.IT.SPEED_BONUS
   )
 
   hero:SetRenderColor(
@@ -114,12 +94,6 @@ function ItState:Remove(playerID)
   StopSoundOn(
     Config.IT.CURSE_AMBIENCE_SOUND,
     hero
-  )
-
-  hero:SetBaseMoveSpeed(
-    self.players:GetBaseMoveSpeed(
-      playerID
-    )
   )
 
   hero:SetRenderColor(
