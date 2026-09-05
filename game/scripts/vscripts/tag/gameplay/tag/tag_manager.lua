@@ -56,6 +56,10 @@ function TagManager:SelectRandomIt()
   self:SetIt(playerID)
 end
 
+function TagManager:GetItPlayerID()
+  return self.itPlayerID
+end
+
 function TagManager:SetIt(playerID)
   if self.itPlayerID == playerID then
     return
