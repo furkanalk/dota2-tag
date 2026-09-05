@@ -1,7 +1,8 @@
 local Config = require("tag/config/config")
+local ResourceCommands = require("tag/dev/commands/resource_commands")
+local TagCommands = require("tag/dev/commands/tag_commands")
 
 local Debug = {}
-
 
 function Debug.Apply()
   if not Config.GAME.DEBUG_MODE then
@@ -18,6 +19,15 @@ function Debug.Apply()
   GameRules:GetGameModeEntity():SetFixedRespawnTime(1)
 
   SendToServerConsole("sv_cheats 1")
+end
+
+function Debug.RegisterCommands(gameMode)
+  if not Config.GAME.DEBUG_MODE then
+    return
+  end
+
+  ResourceCommands.Register(gameMode)
+  TagCommands.Register(gameMode)
 end
 
 return Debug

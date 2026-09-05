@@ -7,11 +7,10 @@ globals = {
   "Activate",
   "TagGameMode",
   "TagManager",
-  "tag_pass_the_curse",
-  "tag_curse_leap",
-  "modifier_tag_curse_leap_motion",
-  "PATTACH_WORLDORIGIN",
-  "EmitSoundOnLocationWithCaster",
+  "modifier_tag_unstable_entry_slow",
+  "MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE",
+  "MODIFIER_PROPERTY_TURN_RATE_PERCENTAGE",
+  "LUA_MODIFIER_MOTION_NONE",
 }
 
 read_globals = dofile("tools/luacheck/dota_globals.lua")

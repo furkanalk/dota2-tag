@@ -1,7 +1,4 @@
 return {
-  SPEED_BONUS = 50,
-  TRANSITION_DURATION = 1.2,
-
   COLOR = {
     r = 255,
     g = 150,

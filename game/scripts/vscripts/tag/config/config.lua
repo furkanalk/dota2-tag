@@ -1,6 +1,7 @@
 return {
   GAME = require("tag/config/game"),
-  PASS = require("tag/config/pass"),
-  LEAP = require("tag/config/leap"),
-  IT = require("tag/config/it")
+  IMPACT = require("tag/config/impact"),
+  STABILITY = require("tag/config/stability"),
+  RESOURCES = require("tag/config/resources"),
+  IT = require("tag/config/it"),
 }
