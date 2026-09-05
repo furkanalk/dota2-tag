@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/furkanalk/dota2-tag/compare/v0.1.0...v0.2.0) (2026-09-05)
+
+
+### Features
+
+* add stability, impact, and runner resource foundations ([#9](https://github.com/furkanalk/dota2-tag/issues/9)) ([54fac77](https://github.com/furkanalk/dota2-tag/commit/54fac778d2603c0955f7dbbb32eefd2c9556928c))
+
 ## [0.1.0](https://github.com/furkanalk/dota2-tag/compare/v0.0.1...v0.1.0) (2026-09-04)
 
 
