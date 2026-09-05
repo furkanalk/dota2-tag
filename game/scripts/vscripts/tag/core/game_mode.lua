@@ -3,6 +3,9 @@ local Debug = require("tag/dev/debug")
 local ImpactManager = require("tag/gameplay/impact/impact_manager")
 local TagManager = require("tag/gameplay/tag/tag_manager")
 local StabilityManager = require("tag/gameplay/stability/stability_manager")
+local RunnerResourceManager = require(
+  "tag/gameplay/resources/runner_resource_manager"
+)
 
 if TagGameMode == nil then
   TagGameMode = class({})
@@ -26,10 +29,17 @@ function TagGameMode:Init()
   self.stabilityManager = StabilityManager()
   self.stabilityManager:Init()
 
+  self.resourceManager = RunnerResourceManager()
+  self.resourceManager:Init(
+    self.tagManager
+  )
+
   self.impactManager = ImpactManager()
   self.impactManager:Init(
     self.stabilityManager
   )
+
+  Debug.RegisterCommands(self)
 
   GameRules:GetGameModeEntity():SetDamageFilter(
     Dynamic_Wrap(
@@ -59,6 +69,7 @@ function TagGameMode:OnNPCSpawned(event)
   if unit and unit:IsRealHero() then
     self.tagManager:RegisterHero(unit)
     self.stabilityManager:RegisterHero(unit)
+    self.resourceManager:RegisterHero(unit)
   end
 end
 
@@ -66,10 +77,11 @@ function TagGameMode:OnThink()
   local state = GameRules:State_Get()
 
   if state == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
+    local currentTime = GameRules:GetGameTime()
+
     self.tagManager:Update()
-    self.stabilityManager:Update(
-      GameRules:GetGameTime()
-    )
+    self.resourceManager:Update(currentTime)
+    self.stabilityManager:Update(currentTime)
   elseif state >= DOTA_GAMERULES_STATE_POST_GAME then
     return nil
   end
@@ -127,10 +139,18 @@ function TagGameMode:DamageFilter(event)
       or inflictorIndex <= 0
 
   if isNormalAttack then
-    self.impactManager:TryNormalImpact(
-      attacker,
-      victim
-    )
+    local applied =
+        self.impactManager:TryNormalImpact(
+          attacker,
+          victim
+        )
+
+    if applied then
+      self.resourceManager:OnNormalImpact(
+        attacker,
+        GameRules:GetGameTime()
+      )
+    end
   end
 
   return true
