@@ -10,6 +10,12 @@ end
 
 
 function TagGameMode:Init()
+  LinkLuaModifier(
+    "modifier_tag_unstable_entry_slow",
+    "tag/gameplay/stability/modifiers/modifier_tag_unstable_entry_slow",
+    LUA_MODIFIER_MOTION_NONE
+  )
+
   print("TAG GAME LOADED.")
 
   Debug.Apply()

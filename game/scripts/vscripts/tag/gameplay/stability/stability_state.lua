@@ -2,11 +2,11 @@ local StabilityState = class({})
 
 StabilityState.NORMAL = "NORMAL"
 StabilityState.UNSTABLE = "UNSTABLE"
-StabilityState.BRACED = "BRACED"
 
-function StabilityState:Init(maxStability)
+function StabilityState:Init(maxStability, regenProfile)
   self.max = maxStability
   self.current = maxStability
+  self.regenProfile = regenProfile
   self.phase = StabilityState.NORMAL
 
   self.lastImpactTime = nil
@@ -20,6 +20,10 @@ end
 
 function StabilityState:GetMax()
   return self.max
+end
+
+function StabilityState:GetRegenProfile()
+  return self.regenProfile
 end
 
 function StabilityState:GetPhase()
