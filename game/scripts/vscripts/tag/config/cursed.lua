@@ -1,0 +1,31 @@
+return {
+  FEAR = {
+    MAX = 100,
+    POSSESSION_START = 35,
+    DECAY_DELAY = 4.0,
+    DECAY_PER_SECOND = 6.0,
+
+    COST = {
+      DREAD_PRESENCE = 20,
+      CURSE_WAVE = 25,
+      PASS_THE_CURSE = 0
+    },
+
+    GAIN = {
+      NORMAL_IMPACT = 10,
+      STABILITY_BREAK = 15,
+      CURSE_WAVE_HIT = 10,
+      DREAD_EXPOSURE_MAX = 12
+    }
+  },
+
+  STABILITY = {
+    MAX = 8,
+    PASSIVE_REGEN_DELAY = 4.0,
+    PASSIVE_REGEN_INTERVAL = 1.75,
+    BLOOD_BATH_HEAL = 1,
+    FRACTURED_THRESHOLD = 2,
+    STAGGER_DURATION = 2.0,
+    RESOLVE_DURATION = 1.75
+  }
+}
