@@ -86,6 +86,9 @@ function FearManager:IsCurrentIt(playerID)
   return self.tagManager:GetItPlayerID() == playerID
 end
 
+-- Fear belongs to the current Curse possession, never permanently to
+-- a player. A transfer discards the old pool and starts the new IT at
+-- the configured possession baseline.
 function FearManager:SyncPossession(currentTime)
   local currentItPlayerID =
       self.tagManager:GetItPlayerID()
@@ -173,6 +176,8 @@ function FearManager:UpdateDecay(currentTime)
   )
 end
 
+-- Cold decay begins only after the hunt has been quiet for DECAY_DELAY;
+-- meaningful Fear-generating activity refreshes that timer.
 function FearManager:Update(currentTime)
   self:SyncPossession(currentTime)
   self:UpdateDecay(currentTime)

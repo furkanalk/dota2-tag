@@ -1,4 +1,17 @@
 "DOTAAbilities"
 {
     "Version" "1"
+
+    "tag_cursed_dread_presence"
+    {
+        "BaseClass"          "ability_lua"
+        "ScriptFile"         "tag/gameplay/cursed/abilities/dread_presence"
+        "AbilityTextureName" "lycan_howl"
+
+        "AbilityBehavior"    "DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+        "AbilityCastPoint"   "0.0"
+        "AbilityCooldown"    "10.5"
+        "AbilityManaCost"    "0"
+        "MaxLevel"           "1"
+    }
 }

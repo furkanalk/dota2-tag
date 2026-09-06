@@ -91,6 +91,8 @@ function CursedStabilityManager:IsFractured(playerID)
       and state:GetCurrent() <= Config.CURSED.STABILITY.FRACTURED_THRESHOLD
 end
 
+-- Cursed Stability belongs to the possession, not to the underlying hero.
+-- Every new IT therefore starts from the universal 8/8 state.
 function CursedStabilityManager:SyncPossession(currentTime)
   local currentItPlayerID = self.tagManager:GetItPlayerID()
 
@@ -140,6 +142,8 @@ function CursedStabilityManager:MarkCombatActivity(
   return true
 end
 
+-- Reaching zero produces a short Stagger, then immediately restores 8/8 and
+-- enters Resolve so coordinated hits cannot chain-lock the IT.
 function CursedStabilityManager:UpdateLifecycle(currentTime)
   local state = self.state
 
@@ -274,6 +278,7 @@ function CursedStabilityManager:ApplyImpact(
   local previous = state:GetCurrent()
   local nextStability = previous - amount
 
+  -- Resolve still allows damage, but clamps a lethal Stability hit at 1/8.
   if phase == CursedStabilityState.RESOLVE
       and nextStability <= 0
   then
@@ -371,6 +376,8 @@ function CursedStabilityManager:Heal(
   return healed
 end
 
+-- Blood Bath rewards a successful normal IT Impact with one Cursed
+-- Stability segment, capped by the universal maximum.
 function CursedStabilityManager:OnNormalImpactLanded(
     attacker,
     currentTime

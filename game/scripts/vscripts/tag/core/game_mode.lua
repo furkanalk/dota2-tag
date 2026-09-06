@@ -1,5 +1,8 @@
 local Config = require("tag/config/config")
 local Debug = require("tag/dev/debug")
+local CursedKitManager = require(
+  "tag/gameplay/cursed/cursed_kit_manager"
+)
 local CursedStabilityManager = require(
   "tag/gameplay/cursed/cursed_stability_manager"
 )
@@ -23,12 +26,33 @@ function TagGameMode:Init()
     LUA_MODIFIER_MOTION_NONE
   )
 
+  LinkLuaModifier(
+    "modifier_tag_cursed_kit",
+    "tag/gameplay/cursed/modifiers/modifier_tag_cursed_kit",
+    LUA_MODIFIER_MOTION_NONE
+  )
+
+  LinkLuaModifier(
+    "modifier_tag_dread_presence",
+    "tag/gameplay/cursed/modifiers/modifier_tag_dread_presence",
+    LUA_MODIFIER_MOTION_NONE
+  )
+
+  LinkLuaModifier(
+    "modifier_tag_dread_slow",
+    "tag/gameplay/cursed/modifiers/modifier_tag_dread_slow",
+    LUA_MODIFIER_MOTION_NONE
+  )
+
   print("TAG GAME LOADED.")
 
   Debug.Apply()
 
   self.tagManager = TagManager()
   self.tagManager:Init()
+
+  self.cursedKitManager = CursedKitManager()
+  self.cursedKitManager:Init(self.tagManager)
 
   self.fearManager = FearManager()
   self.fearManager:Init(self.tagManager)
@@ -92,6 +116,7 @@ function TagGameMode:OnThink()
     local currentTime = GameRules:GetGameTime()
 
     self.tagManager:Update()
+    self.cursedKitManager:Update()
     self.fearManager:Update(currentTime)
     self.cursedStabilityManager:Update(currentTime)
     self.resourceManager:Update(currentTime)
