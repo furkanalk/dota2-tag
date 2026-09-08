@@ -22,6 +22,10 @@ return {
   -- Modifiers
   "LinkLuaModifier",
 
+  -- Ability constants
+  "DOTA_ABILITY_BEHAVIOR_NO_TARGET",
+  "DOTA_ABILITY_BEHAVIOR_POINT",
+
   -- Modifier constants
   "LUA_MODIFIER_MOTION_HORIZONTAL",
 
@@ -48,9 +52,6 @@ return {
   -- Animation constants
   "ACT_DOTA_ATTACK",
   "ACT_DOTA_FLINCH",
-
-  -- Modifier constants
-  "LUA_MODIFIER_MOTION_HORIZONTAL",
 
   -- Particle constants
   "PATTACH_ABSORIGIN_FOLLOW",
