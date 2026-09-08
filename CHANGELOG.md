@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/furkanalk/dota2-tag/compare/v0.2.0...v0.3.0) (2026-09-08)
+
+
+### Features
+
+* **cursed:** expand cursed kit with fear and curse wave ([#11](https://github.com/furkanalk/dota2-tag/issues/11)) ([91340bd](https://github.com/furkanalk/dota2-tag/commit/91340bd5b96b4cb768076999bdd9d49e3a50140d))
+
 ## [0.2.0](https://github.com/furkanalk/dota2-tag/compare/v0.1.0...v0.2.0) (2026-09-05)
 
 
