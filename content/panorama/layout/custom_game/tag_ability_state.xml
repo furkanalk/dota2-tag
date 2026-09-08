@@ -1,0 +1,14 @@
+<root>
+    <scripts>
+        <include src="file://{resources}/scripts/custom_game/tag_ability_state.js" />
+    </scripts>
+
+    <Panel
+        hittest="false"
+        hittestchildren="false"
+        style="
+            width: 100%;
+            height: 100%;
+        "
+    />
+</root>

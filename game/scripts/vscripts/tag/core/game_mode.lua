@@ -44,6 +44,12 @@ function TagGameMode:Init()
     LUA_MODIFIER_MOTION_NONE
   )
 
+  LinkLuaModifier(
+    "modifier_tag_curse_wave_reveal",
+    "tag/gameplay/cursed/modifiers/modifier_tag_curse_wave_reveal",
+    LUA_MODIFIER_MOTION_NONE
+  )
+
   print("TAG GAME LOADED.")
 
   Debug.Apply()
@@ -51,14 +57,18 @@ function TagGameMode:Init()
   self.tagManager = TagManager()
   self.tagManager:Init()
 
-  self.cursedKitManager = CursedKitManager()
-  self.cursedKitManager:Init(self.tagManager)
-
   self.fearManager = FearManager()
   self.fearManager:Init(self.tagManager)
 
   self.cursedStabilityManager = CursedStabilityManager()
   self.cursedStabilityManager:Init(self.tagManager)
+
+  self.cursedKitManager = CursedKitManager()
+  self.cursedKitManager:Init(
+    self.tagManager,
+    self.fearManager,
+    self.cursedStabilityManager
+  )
 
   self.stabilityManager = StabilityManager()
   self.stabilityManager:Init()
@@ -116,9 +126,12 @@ function TagGameMode:OnThink()
     local currentTime = GameRules:GetGameTime()
 
     self.tagManager:Update()
-    self.cursedKitManager:Update()
     self.fearManager:Update(currentTime)
     self.cursedStabilityManager:Update(currentTime)
+
+    self.cursedKitManager:Update()
+    self.cursedKitManager:UpdateAvailability()
+
     self.resourceManager:Update(currentTime)
     self.stabilityManager:Update(currentTime)
   elseif state >= DOTA_GAMERULES_STATE_POST_GAME then

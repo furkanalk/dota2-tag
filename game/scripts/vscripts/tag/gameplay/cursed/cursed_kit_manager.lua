@@ -1,3 +1,7 @@
+-- luacheck: globals CustomNetTables
+
+local Config = require("tag/config/config")
+
 local CursedKitManager = class({})
 
 -- Universal Cursed abilities temporarily replace the host hero slots.
@@ -5,7 +9,13 @@ local CursedKitManager = class({})
 local CURSED_ABILITIES = {
   {
     name = "tag_cursed_dread_presence",
-    index = 0
+    index = 0,
+    fearCostKey = "DREAD_PRESENCE"
+  },
+  {
+    name = "tag_cursed_curse_wave",
+    index = 1,
+    fearCostKey = "CURSE_WAVE"
   }
 }
 
@@ -38,11 +48,24 @@ local function FindSnapshotAtIndex(
   return nil
 end
 
-function CursedKitManager:Init(tagManager)
+function CursedKitManager:Init(
+    tagManager,
+    fearManager,
+    cursedStabilityManager
+)
   self.tagManager = tagManager
+  self.fearManager = fearManager
+  self.cursedStabilityManager = cursedStabilityManager
+
   self.ownerPlayerID = nil
   self.ownerHero = nil
   self.runnerAbilitySnapshot = nil
+
+  -- Cache the last replicated affordability state so the 20 Hz game think
+  -- does not spam CustomNetTables while nothing relevant has changed.
+  self.lastFearUiPlayerID = nil
+  self.lastQFearLocked = nil
+  self.lastWFearLocked = nil
 end
 
 -- Snapshot the Runner kit before possession so Curse removal can restore
@@ -249,7 +272,7 @@ function CursedKitManager:Activate(
   print(
     "CURSED KIT APPLIED: Player "
     .. playerID
-    .. " | Dread Presence"
+    .. " | Dread Presence / Curse Wave"
   )
 
   return true
@@ -259,6 +282,9 @@ end
 function CursedKitManager:Deactivate()
   local hero = self.ownerHero
   local playerID = self.ownerPlayerID
+
+  -- Clear the old host's replicated Curse HUD state before ownership moves.
+  self:ClearFearAvailability(playerID)
 
   if IsValidHero(hero) then
     CursedKitManager.RestoreCursedSlots(
@@ -283,6 +309,109 @@ function CursedKitManager:Deactivate()
   self.ownerPlayerID = nil
   self.ownerHero = nil
   self.runnerAbilitySnapshot = nil
+end
+
+-- Replicate Fear affordability as its own UI reason. Cooldown and Stagger
+-- are separate states; Panorama can therefore keep an unaffordable ability
+-- grey even while Dota's native cooldown rendering is active.
+function CursedKitManager:PublishFearAvailability(
+    playerID,
+    currentFear
+)
+  local qFearLocked =
+      currentFear
+      < Config.CURSED.FEAR.COST.DREAD_PRESENCE
+
+  local wFearLocked =
+      currentFear
+      < Config.CURSED.FEAR.COST.CURSE_WAVE
+
+  if self.lastFearUiPlayerID == playerID
+      and self.lastQFearLocked == qFearLocked
+      and self.lastWFearLocked == wFearLocked
+  then
+    return
+  end
+
+  CustomNetTables:SetTableValue(
+    "tag_cursed_ui",
+    tostring(playerID),
+    {
+      is_cursed = 1,
+      q_fear_locked = qFearLocked and 1 or 0,
+      w_fear_locked = wFearLocked and 1 or 0
+    }
+  )
+
+  self.lastFearUiPlayerID = playerID
+  self.lastQFearLocked = qFearLocked
+  self.lastWFearLocked = wFearLocked
+end
+
+function CursedKitManager:ClearFearAvailability(playerID)
+  if playerID == nil then
+    return
+  end
+
+  CustomNetTables:SetTableValue(
+    "tag_cursed_ui",
+    tostring(playerID),
+    {
+      is_cursed = 0,
+      q_fear_locked = 0,
+      w_fear_locked = 0
+    }
+  )
+
+  self.lastFearUiPlayerID = nil
+  self.lastQFearLocked = nil
+  self.lastWFearLocked = nil
+end
+
+-- Keep HUD/input availability synchronized with the possession's Fear pool.
+-- SetActivated(false) prevents Q/W from entering cast/targeting mode at all;
+-- server-side cast filters remain as a safety net for stale or scripted orders.
+function CursedKitManager:UpdateAvailability()
+  local hero = self.ownerHero
+  local playerID = self.ownerPlayerID
+
+  if not IsValidHero(hero)
+      or playerID == nil
+  then
+    return
+  end
+
+  local currentFear =
+      self.fearManager:GetCurrent(playerID)
+      or 0
+
+  self:PublishFearAvailability(
+    playerID,
+    currentFear
+  )
+
+  local staggered =
+      self.cursedStabilityManager:IsStaggered(
+        playerID
+      )
+
+  for _, definition in ipairs(CURSED_ABILITIES) do
+    local ability =
+        hero:FindAbilityByName(
+          definition.name
+        )
+
+    if ability ~= nil then
+      -- Fear never deactivates the ability at engine level; doing so causes
+      -- Dota to emit the generic "Ability inactive" error instead of our
+      -- authored "Not enough Fear" validation message.
+      local available = not staggered
+
+      if ability:IsActivated() ~= available then
+        ability:SetActivated(available)
+      end
+    end
+  end
 end
 
 -- Follow TagManager ownership changes; no work is done while the same hero

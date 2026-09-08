@@ -14,4 +14,18 @@
         "AbilityManaCost"    "0"
         "MaxLevel"           "1"
     }
+
+    "tag_cursed_curse_wave"
+    {
+        "BaseClass"          "ability_lua"
+        "ScriptFile"         "tag/gameplay/cursed/abilities/curse_wave"
+        "AbilityTextureName" "vengefulspirit_wave_of_terror"
+
+        "AbilityBehavior"    "DOTA_ABILITY_BEHAVIOR_POINT"
+        "AbilityCastRange"   "1200"
+        "AbilityCastPoint"   "0.0"
+        "AbilityCooldown"    "7.5"
+        "AbilityManaCost"    "0"
+        "MaxLevel"           "1"
+    }
 }
