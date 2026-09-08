@@ -1,5 +1,12 @@
 local Config = require("tag/config/config")
 local Debug = require("tag/dev/debug")
+local CursedKitManager = require(
+  "tag/gameplay/cursed/cursed_kit_manager"
+)
+local CursedStabilityManager = require(
+  "tag/gameplay/cursed/cursed_stability_manager"
+)
+local FearManager = require("tag/gameplay/cursed/fear_manager")
 local ImpactManager = require("tag/gameplay/impact/impact_manager")
 local TagManager = require("tag/gameplay/tag/tag_manager")
 local StabilityManager = require("tag/gameplay/stability/stability_manager")
@@ -19,12 +26,49 @@ function TagGameMode:Init()
     LUA_MODIFIER_MOTION_NONE
   )
 
+  LinkLuaModifier(
+    "modifier_tag_cursed_kit",
+    "tag/gameplay/cursed/modifiers/modifier_tag_cursed_kit",
+    LUA_MODIFIER_MOTION_NONE
+  )
+
+  LinkLuaModifier(
+    "modifier_tag_dread_presence",
+    "tag/gameplay/cursed/modifiers/modifier_tag_dread_presence",
+    LUA_MODIFIER_MOTION_NONE
+  )
+
+  LinkLuaModifier(
+    "modifier_tag_dread_slow",
+    "tag/gameplay/cursed/modifiers/modifier_tag_dread_slow",
+    LUA_MODIFIER_MOTION_NONE
+  )
+
+  LinkLuaModifier(
+    "modifier_tag_curse_wave_reveal",
+    "tag/gameplay/cursed/modifiers/modifier_tag_curse_wave_reveal",
+    LUA_MODIFIER_MOTION_NONE
+  )
+
   print("TAG GAME LOADED.")
 
   Debug.Apply()
 
   self.tagManager = TagManager()
   self.tagManager:Init()
+
+  self.fearManager = FearManager()
+  self.fearManager:Init(self.tagManager)
+
+  self.cursedStabilityManager = CursedStabilityManager()
+  self.cursedStabilityManager:Init(self.tagManager)
+
+  self.cursedKitManager = CursedKitManager()
+  self.cursedKitManager:Init(
+    self.tagManager,
+    self.fearManager,
+    self.cursedStabilityManager
+  )
 
   self.stabilityManager = StabilityManager()
   self.stabilityManager:Init()
@@ -36,7 +80,9 @@ function TagGameMode:Init()
 
   self.impactManager = ImpactManager()
   self.impactManager:Init(
-    self.stabilityManager
+    self.stabilityManager,
+    self.cursedStabilityManager,
+    self.tagManager
   )
 
   Debug.RegisterCommands(self)
@@ -80,6 +126,12 @@ function TagGameMode:OnThink()
     local currentTime = GameRules:GetGameTime()
 
     self.tagManager:Update()
+    self.fearManager:Update(currentTime)
+    self.cursedStabilityManager:Update(currentTime)
+
+    self.cursedKitManager:Update()
+    self.cursedKitManager:UpdateAvailability()
+
     self.resourceManager:Update(currentTime)
     self.stabilityManager:Update(currentTime)
   elseif state >= DOTA_GAMERULES_STATE_POST_GAME then
@@ -139,16 +191,30 @@ function TagGameMode:DamageFilter(event)
       or inflictorIndex <= 0
 
   if isNormalAttack then
-    local applied =
+    local applied, impactResult =
         self.impactManager:TryNormalImpact(
           attacker,
           victim
         )
 
     if applied then
+      local currentTime =
+          GameRules:GetGameTime()
+
       self.resourceManager:OnNormalImpact(
         attacker,
-        GameRules:GetGameTime()
+        currentTime
+      )
+
+      self.fearManager:OnNormalImpact(
+        attacker,
+        impactResult,
+        currentTime
+      )
+
+      self.cursedStabilityManager:OnNormalImpactLanded(
+        attacker,
+        currentTime
       )
     end
   end

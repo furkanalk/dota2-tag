@@ -25,6 +25,12 @@ function Precache(context)
 		Config.IT.TRANSITION_PARTICLE,
 		context
 	)
+
+	PrecacheResource(
+		"particle",
+		Config.CURSED.CURSE_WAVE.PARTICLE,
+		context
+	)
 end
 
 function Activate()

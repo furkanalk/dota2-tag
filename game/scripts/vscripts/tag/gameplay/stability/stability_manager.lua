@@ -139,6 +139,29 @@ function StabilityManager:GetPhase(playerID)
   return state:GetPhase()
 end
 
+-- External hunt mechanics can delay Runner Stability recovery without
+-- pretending to deal an Impact or changing the current Stability value.
+function StabilityManager:SuppressRegen(
+    playerID,
+    currentTime
+)
+  local state = self.states[playerID]
+
+  if state == nil
+      or state:GetPhase() ~= StabilityState.NORMAL
+  then
+    return false
+  end
+
+  ScheduleNextRegen(
+    state,
+    currentTime
+    + Config.STABILITY.REGEN_DELAY
+  )
+
+  return true
+end
+
 function StabilityManager:ApplyImpact(
     sourcePlayerID,
     targetPlayerID,

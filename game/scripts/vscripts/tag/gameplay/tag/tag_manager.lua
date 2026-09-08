@@ -60,6 +60,14 @@ function TagManager:GetItPlayerID()
   return self.itPlayerID
 end
 
+function TagManager:GetHero(playerID)
+  return self.players:GetHero(playerID)
+end
+
+function TagManager:GetHeroes()
+  return self.players:GetHeroes()
+end
+
 function TagManager:SetIt(playerID)
   if self.itPlayerID == playerID then
     return

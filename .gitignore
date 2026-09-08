@@ -58,4 +58,9 @@ htmlcov/
 
 # Lua / LuaRocks local tooling
 .luarocks/
-lua_modules/
+lua_modules/*.vxml_c
+*.vjs_c
+*.vcss_c
+
+# Generated Panorama runtime output
+/game/panorama/

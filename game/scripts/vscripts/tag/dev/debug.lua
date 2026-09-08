@@ -1,4 +1,5 @@
 local Config = require("tag/config/config")
+local CursedCommands = require("tag/dev/commands/cursed_commands")
 local ResourceCommands = require("tag/dev/commands/resource_commands")
 local TagCommands = require("tag/dev/commands/tag_commands")
 
@@ -26,6 +27,7 @@ function Debug.RegisterCommands(gameMode)
     return
   end
 
+  CursedCommands.Register(gameMode)
   ResourceCommands.Register(gameMode)
   TagCommands.Register(gameMode)
 end
