@@ -2,31 +2,29 @@
   <img src="https://i.imgur.com/bJ5eXgH.jpeg" alt="Tag Party" width="480">
 </p>
 
-[![Quality][badge-quality]][quality-url]
 ![Dota 2 Custom Game][badge-dota2]
 ![Source 2][badge-source2]
 ![Lua VScript][badge-lua]
 ![Panorama][badge-panorama]
 [![GPL-3.0][badge-license]][license]
-![Status][badge-status]
 
-**Tag Party** is a movement-focused competitive party arena game built as a custom game for Dota 2.
-
-☠️ **Pass the Curse. Ruin your friends.**
+<p align="center">
+  ☠️ **Pass the Curse. Ruin your friends.**
+</p>
 
 ---
 
 ## About
 
-Tag Party is an **8-player free-for-all** built around one active Curse and one continuous 20-minute match.
+Tag Party is a multiplayer party-style custom game where one player is selected as IT and must chase the others.
 
-One player is **Cursed / IT**. The others are Runners.
+Curse another player and the role immediately transfers to them.
 
-The Curse is not transferred by simply touching another player. IT must hunt a Runner, pressure their **Stability**, create an **UNSTABLE** window, and successfully use **Pass the Curse** before the target escapes.
+> **Run together. Betray each other. Pass the Curse.**
 
-There is no conventional death loop. Players fight over movement, position, information, objectives, sabotage, and the timing of the Curse itself.
+The project aims to turn the familiar movement, heroes, and abilities of Dota 2 into a short, fast-paced, and chaotic multiplayer experience.
 
-The first-prototype gameplay design is currently **frozen for implementation and playtesting**. Balance values may still change as real multiplayer data comes in.
+First-prototype gameplay design is currently frozen for implementation and playtesting. Balance values may still change as real multiplayer data comes in.
 
 ## Gameplay
 
@@ -62,6 +60,7 @@ Runners are not passive prey. They can fight back, interfere with each other, ma
 
 ## Development
 
+[![Quality][badge-quality]][quality-url]
 ![Hammer][badge-hammer]
 ![GitHub Actions][badge-actions]
 ![Pre-1.0][badge-pre1]
@@ -217,7 +216,6 @@ Tag Party is an unofficial Dota 2 custom game and is not affiliated with or endo
 [badge-lua]: https://img.shields.io/badge/Lua-VScript-2c2d72?style=flat-square&logo=lua&logoColor=white
 [badge-panorama]: https://img.shields.io/badge/UI-Panorama-2980b9?style=flat-square
 [badge-license]: https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square
-[badge-status]: https://img.shields.io/badge/Status-In%20Development-orange?style=flat-square
 
 [badge-multiplayer]: https://img.shields.io/badge/Mode-8%20Player%20FFA-b12c2c?style=flat-square
 [badge-party]: https://img.shields.io/badge/Genre-Party%20Arena-f39c12?style=flat-square
