@@ -43,6 +43,13 @@ return {
     FEAR_GRANT_INTERVAL = 0.50
   },
 
+  PASS_THE_CURSE = {
+    RANGE = 400,
+    MIN_ARM_TIME = 0.55,
+    MAX_HOLD_TIME = 1.40,
+    FIZZLE_RECOVERY = 0.65
+  },
+
   CURSE_WAVE = {
     RANGE = 1200,
     WIDTH = 200,

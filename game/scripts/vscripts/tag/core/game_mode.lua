@@ -8,6 +8,9 @@ local CursedStabilityManager = require(
 )
 local FearManager = require("tag/gameplay/cursed/fear_manager")
 local ImpactManager = require("tag/gameplay/impact/impact_manager")
+local PassTheCurseManager = require(
+  "tag/gameplay/cursed/pass_the_curse_manager"
+)
 local TagManager = require("tag/gameplay/tag/tag_manager")
 local StabilityManager = require("tag/gameplay/stability/stability_manager")
 local RunnerResourceManager = require(
@@ -63,15 +66,25 @@ function TagGameMode:Init()
   self.cursedStabilityManager = CursedStabilityManager()
   self.cursedStabilityManager:Init(self.tagManager)
 
+  self.stabilityManager = StabilityManager()
+  self.stabilityManager:Init(
+    self.tagManager
+  )
+
+  self.passTheCurseManager = PassTheCurseManager()
+  self.passTheCurseManager:Init(
+    self.tagManager,
+    self.stabilityManager,
+    self.cursedStabilityManager
+  )
+
   self.cursedKitManager = CursedKitManager()
   self.cursedKitManager:Init(
     self.tagManager,
     self.fearManager,
-    self.cursedStabilityManager
+    self.cursedStabilityManager,
+    self.passTheCurseManager
   )
-
-  self.stabilityManager = StabilityManager()
-  self.stabilityManager:Init()
 
   self.resourceManager = RunnerResourceManager()
   self.resourceManager:Init(
@@ -82,7 +95,8 @@ function TagGameMode:Init()
   self.impactManager:Init(
     self.stabilityManager,
     self.cursedStabilityManager,
-    self.tagManager
+    self.tagManager,
+    self.passTheCurseManager
   )
 
   Debug.RegisterCommands(self)
@@ -128,6 +142,7 @@ function TagGameMode:OnThink()
     self.tagManager:Update()
     self.fearManager:Update(currentTime)
     self.cursedStabilityManager:Update(currentTime)
+    self.passTheCurseManager:Update(currentTime)
 
     self.cursedKitManager:Update()
     self.cursedKitManager:UpdateAvailability()

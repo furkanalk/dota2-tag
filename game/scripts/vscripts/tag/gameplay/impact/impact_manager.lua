@@ -12,11 +12,13 @@ end
 function ImpactManager:Init(
     stabilityManager,
     cursedStabilityManager,
-    tagManager
+    tagManager,
+    passTheCurseManager
 )
   self.stability = stabilityManager
   self.cursedStability = cursedStabilityManager
   self.tagManager = tagManager
+  self.passTheCurseManager = passTheCurseManager
   self.nextNormalImpactTime = {}
 end
 
@@ -37,6 +39,14 @@ function ImpactManager:TryNormalImpact(attacker, target)
 
   if self.cursedStability:IsStaggered(sourcePlayerID) then
     return false, "cursed_stagger"
+  end
+
+  if self.passTheCurseManager ~= nil
+      and self.passTheCurseManager:IsActionLocked(
+        sourcePlayerID
+      )
+  then
+    return false, "pass_lock"
   end
 
   local currentTime = GameRules:GetGameTime()

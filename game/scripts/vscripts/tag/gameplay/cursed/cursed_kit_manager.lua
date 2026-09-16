@@ -16,6 +16,11 @@ local CURSED_ABILITIES = {
     name = "tag_cursed_curse_wave",
     index = 1,
     fearCostKey = "CURSE_WAVE"
+  },
+  {
+    name = "tag_cursed_pass_the_curse",
+    index = 2,
+    fearCostKey = "PASS_THE_CURSE"
   }
 }
 
@@ -51,11 +56,13 @@ end
 function CursedKitManager:Init(
     tagManager,
     fearManager,
-    cursedStabilityManager
+    cursedStabilityManager,
+    passTheCurseManager
 )
   self.tagManager = tagManager
   self.fearManager = fearManager
   self.cursedStabilityManager = cursedStabilityManager
+  self.passTheCurseManager = passTheCurseManager
 
   self.ownerPlayerID = nil
   self.ownerHero = nil
@@ -272,7 +279,7 @@ function CursedKitManager:Activate(
   print(
     "CURSED KIT APPLIED: Player "
     .. playerID
-    .. " | Dread Presence / Curse Wave"
+    .. " | Dread Presence / Curse Wave / Pass the Curse"
   )
 
   return true
@@ -368,9 +375,8 @@ function CursedKitManager:ClearFearAvailability(playerID)
   self.lastWFearLocked = nil
 end
 
--- Keep HUD/input availability synchronized with the possession's Fear pool.
--- SetActivated(false) prevents Q/W from entering cast/targeting mode at all;
--- server-side cast filters remain as a safety net for stale or scripted orders.
+-- Keep native activation synchronized with hard action locks only.
+-- Fear affordability remains a cast-filter/UI concern so authored errors survive.
 function CursedKitManager:UpdateAvailability()
   local hero = self.ownerHero
   local playerID = self.ownerPlayerID
@@ -395,6 +401,12 @@ function CursedKitManager:UpdateAvailability()
         playerID
       )
 
+  local passLocked =
+      self.passTheCurseManager ~= nil
+      and self.passTheCurseManager:IsActionLocked(
+        playerID
+      )
+
   for _, definition in ipairs(CURSED_ABILITIES) do
     local ability =
         hero:FindAbilityByName(
@@ -405,7 +417,9 @@ function CursedKitManager:UpdateAvailability()
       -- Fear never deactivates the ability at engine level; doing so causes
       -- Dota to emit the generic "Ability inactive" error instead of our
       -- authored "Not enough Fear" validation message.
-      local available = not staggered
+      local available =
+          not staggered
+          and not passLocked
 
       if ability:IsActivated() ~= available then
         ability:SetActivated(available)

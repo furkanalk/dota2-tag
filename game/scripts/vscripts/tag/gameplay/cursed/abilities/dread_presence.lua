@@ -50,6 +50,17 @@ function tag_cursed_dread_presence.CastFilterResult(self)
     return UF_FAIL_CUSTOM
   end
 
+  if gameMode.passTheCurseManager ~= nil
+      and gameMode.passTheCurseManager:IsActionLocked(
+        playerID
+      )
+  then
+    self.castError =
+        "The Curse is reaching."
+
+    return UF_FAIL_CUSTOM
+  end
+
   local currentFear =
       gameMode.fearManager:GetCurrent(playerID)
 

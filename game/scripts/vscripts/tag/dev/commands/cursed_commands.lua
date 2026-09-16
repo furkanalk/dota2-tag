@@ -9,6 +9,7 @@ end
 function CursedCommands.Register(gameMode)
   local fearManager = gameMode.fearManager
   local stabilityManager = gameMode.cursedStabilityManager
+  local passManager = gameMode.passTheCurseManager
 
   Convars:RegisterCommand(
     "tag_fear_dump",
@@ -197,6 +198,93 @@ function CursedCommands.Register(gameMode)
       print("DEBUG CURSED STABILITY HEAL: +" .. tostring(healed))
     end,
     "Heal Cursed Stability for testing",
+    0
+  )
+
+  Convars:RegisterCommand(
+    "tag_pass_dump",
+    function()
+      local currentTime = GameRules:GetGameTime()
+      passManager:Update(currentTime)
+
+      print(string.format(
+        "PASS DEBUG: phase=%s | owner=%s | ready=%s | expires=%s | fizzle=%s | last=%s",
+        tostring(passManager:GetPhase()),
+        tostring(passManager:GetOwnerPlayerID()),
+        tostring(passManager:GetReadyAt()),
+        tostring(passManager:GetExpiresAt()),
+        tostring(passManager:GetFizzleUntil()),
+        tostring(passManager:GetLastResult())
+      ))
+    end,
+    "Dump Pass the Curse transaction state",
+    0
+  )
+
+  Convars:RegisterCommand(
+    "tag_test_pass_begin",
+    function(_, playerIDText)
+      local playerID = ParsePlayerID(playerIDText)
+
+      if playerID == nil then
+        playerID = gameMode.tagManager:GetItPlayerID()
+      end
+
+      if playerID == nil then
+        print("PASS DEBUG: no active IT")
+        return
+      end
+
+      local started, result =
+          passManager:Begin(
+            playerID,
+            GameRules:GetGameTime()
+          )
+
+      print(
+        "DEBUG PASS BEGIN: "
+        .. tostring(started)
+        .. " | "
+        .. tostring(result)
+      )
+    end,
+    "Begin Pass the Curse arming for testing",
+    0
+  )
+
+  Convars:RegisterCommand(
+    "tag_test_pass_release",
+    function(_, targetPlayerIDText)
+      local sourcePlayerID =
+          gameMode.tagManager:GetItPlayerID()
+
+      local targetPlayerID =
+          ParsePlayerID(targetPlayerIDText)
+
+      if sourcePlayerID == nil
+          or targetPlayerID == nil
+      then
+        print(
+          "USAGE: tag_test_pass_release <targetPlayerID>"
+        )
+        return
+      end
+
+      local committed, result =
+          passManager:Release(
+            sourcePlayerID,
+            targetPlayerID,
+            GameRules:GetGameTime()
+          )
+
+      print(
+        "DEBUG PASS RELEASE: "
+        .. tostring(committed)
+        .. " | "
+        .. tostring(result)
+      )
+    end,
+    "Release Pass the Curse to a target player for testing",
     0
   )
 end

@@ -54,9 +54,43 @@ local function ScheduleNextRegen(
   )
 end
 
-function StabilityManager:Init()
+function StabilityManager:Init(tagManager)
+  self.tagManager = tagManager
   self.states = {}
   self.heroes = {}
+  self.frozenSince = {}
+end
+
+function StabilityManager:IsCursed(playerID)
+  return self.tagManager ~= nil
+      and self.tagManager:GetItPlayerID() == playerID
+end
+
+local function ShiftStateTimers(state, delta)
+  local lastImpactTime = state:GetLastImpactTime()
+
+  if lastImpactTime ~= nil then
+    state:SetLastImpactTime(
+      lastImpactTime + delta
+    )
+  end
+
+  local nextRegenTime = state:GetNextRegenTime()
+
+  if nextRegenTime ~= nil then
+    state:SetNextRegenTime(
+      nextRegenTime + delta
+    )
+  end
+
+  local phaseUntil = state:GetPhaseUntil()
+
+  if phaseUntil ~= nil then
+    state:SetPhase(
+      state:GetPhase(),
+      phaseUntil + delta
+    )
+  end
 end
 
 function StabilityManager:RegisterHero(hero)
@@ -139,6 +173,18 @@ function StabilityManager:GetPhase(playerID)
   return state:GetPhase()
 end
 
+-- Pass the Curse consumes explicit vulnerability states rather than inferring
+-- legality from current Stability alone. COLLAPSED will join this predicate
+-- when that lifecycle is implemented.
+function StabilityManager:IsCurseable(playerID)
+  if self:IsCursed(playerID) then
+    return false
+  end
+
+  return self:GetPhase(playerID)
+      == StabilityState.UNSTABLE
+end
+
 -- External hunt mechanics can delay Runner Stability recovery without
 -- pretending to deal an Impact or changing the current Stability value.
 function StabilityManager:SuppressRegen(
@@ -148,6 +194,7 @@ function StabilityManager:SuppressRegen(
   local state = self.states[playerID]
 
   if state == nil
+      or self:IsCursed(playerID)
       or state:GetPhase() ~= StabilityState.NORMAL
   then
     return false
@@ -172,6 +219,10 @@ function StabilityManager:ApplyImpact(
 
   if state == nil then
     return false, "unregistered"
+  end
+
+  if self:IsCursed(targetPlayerID) then
+    return false, "cursed"
   end
 
   if state:GetPhase() == StabilityState.UNSTABLE then
@@ -243,25 +294,60 @@ end
 
 function StabilityManager:Update(currentTime)
   for playerID, state in pairs(self.states) do
-    local phase = state:GetPhase()
-    local phaseUntil = state:GetPhaseUntil()
+    local cursed = self:IsCursed(playerID)
+    local frozenSince = self.frozenSince[playerID]
 
-    if phase == StabilityState.UNSTABLE
-        and phaseUntil ~= nil
-        and currentTime >= phaseUntil
-    then
-      StabilityManager.ResolveUnstable(
+    if cursed then
+      if frozenSince == nil then
+        self.frozenSince[playerID] = currentTime
+
+        print(
+          "RUNNER STABILITY FROZEN: Player "
+          .. playerID
+        )
+      end
+    else
+      if frozenSince ~= nil then
+        local frozenDuration =
+            math.max(
+              0,
+              currentTime - frozenSince
+            )
+
+        ShiftStateTimers(
+          state,
+          frozenDuration
+        )
+
+        self.frozenSince[playerID] = nil
+
+        print(string.format(
+          "RUNNER STABILITY RESTORED: Player %d | paused %.2fs",
+          playerID,
+          frozenDuration
+        ))
+      end
+
+      local phase = state:GetPhase()
+      local phaseUntil = state:GetPhaseUntil()
+
+      if phase == StabilityState.UNSTABLE
+          and phaseUntil ~= nil
+          and currentTime >= phaseUntil
+      then
+        StabilityManager.ResolveUnstable(
+          playerID,
+          state,
+          phaseUntil
+        )
+      end
+
+      StabilityManager.UpdateRegen(
         playerID,
         state,
-        phaseUntil
+        currentTime
       )
     end
-
-    StabilityManager.UpdateRegen(
-      playerID,
-      state,
-      currentTime
-    )
   end
 end
 
